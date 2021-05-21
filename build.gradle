@@ -2,7 +2,7 @@ plugins{
     id "java"
     id "groovy"
     id "scala"
-    id "kotlin"
+    id "org.jetbrains.kotlin.jvm" version "1.5.0"
 }
 
 group("qmelz");
@@ -19,9 +19,12 @@ sourceSets.main{
 
 repositories{
     mavenCentral()
-    maven.url("https://jitpack.io");
+    maven{
+        url("https://jitpack.io");
+    }
 }
 
 dependencies{
     implementation("com.github.Anuken.Mindustry:core:v126.2");
+    implementation("org.codehaus.groovy:groovy-all:2.4.15");
 }

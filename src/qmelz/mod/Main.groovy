@@ -3,11 +3,11 @@ package qmelz.mod;
 import mindustry.mod.*;
 
 public class Main extends Mod{
-    def init(){
+    void init(){
         
     }
     
-    def loadContent(){
+    void loadContent(){
         
     }
 }
