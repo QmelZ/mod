@@ -1,0 +1,27 @@
+plugins{
+    id "java"
+    id "groovy"
+    id "scala"
+    id "kotlin"
+}
+
+group("qmelz");
+
+jar.archiveFileName.set("chaos.jar");
+
+sourceSets.main{
+    resources.srcDir("resources/");
+    def langs = [java, groovy, scala, kotlin];
+    langs.each{
+        it.srcDir("src/");
+    }
+}
+
+repositories{
+    mavenCentral()
+    maven.url("https://jitpack.io");
+}
+
+dependencies{
+    implementation("com.github.Anuken.Mindustry:core:v126.2");
+}
