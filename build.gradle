@@ -5,9 +5,10 @@ plugins{
     id "org.jetbrains.kotlin.jvm" version "1.5.0"
 }
 
+sourceCompatibility = 1.8;
+
 group("qmelz");
 
-jar.archiveFileName.set("chaos.jar");
 
 sourceSets.main{
     resources.srcDir("resources/");
@@ -25,17 +26,20 @@ repositories{
 }
 
 dependencies{
-    def impl = [
-        "org.codehaus.groovy:groovy-all:2.4.15",
-        "org.scala-lang:scala-library:2.11.12",
-        "com.github.Anuken.Mindustry:core:v126.2"
-    ];
-    
-    impl.each{
-        implementation(it);
-    }
+    compile("org.codehaus.groovy:groovy-all:2.4.15");
+    implementation("org.scala-lang:scala-library:2.11.12");
+    implementation("com.github.Anuken.Mindustry:core:v126.2");
 }
 
+jar{
+    archiveFileName.set("chaos.jar");
+    
+    from{
+        configurations.compile.collect{
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
 
 // credits to sonnicon
 task dexify(type: Jar) {
