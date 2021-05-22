@@ -5,10 +5,8 @@ plugins{
     id "groovy"
 }
 
-sourceCompatibility = 1.8;
-
 group("qmelz");
-
+sourceCompatibility = 1.8;
 
 sourceSets.main{
     resources.srcDir("resources/");
@@ -34,9 +32,7 @@ dependencies{
 
 jar{
     archiveFileName.set("chaos.jar");
-    
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE;
-    
     
     from{
         configurations.compileClasspath.collect{
@@ -46,10 +42,10 @@ jar{
 }
 
 compileGroovy{
-    dependsOn "compileScala";
+    dependsOn("compileScala");
     classpath += files(compileScala.destinationDir);
     
-    dependsOn "compileKotlin";
+    dependsOn("compileKotlin");
     classpath += files(compileKotlin.destinationDir);
 }
 
@@ -57,14 +53,14 @@ compileGroovy{
 task dexify(type: Jar){
     archiveFileName.set("dexed-chaos.jar");
 
-    final File jarArtifact = new File(tasks.jar.archiveFile.get().asFile.parent, "chaos.jar")
-    final File dexedArtifact = new File(tasks.dexify.getTemporaryDir(), "dexed.jar")
+    final File jarArtifact = new File(tasks.jar.archiveFile.get().asFile.parent, "chaos.jar");
+    final File dexedArtifact = new File(tasks.dexify.getTemporaryDir(), "dexed.jar");
     
     doFirst{
         exec{
             workingDir dexedArtifact.parent
             
-            def command = ["d8", "--min-api", pMinApi, "--output", dexedArtifact, jarArtifact];
+            def command = ["d8", "--min-api", "14", "--output", dexedArtifact, jarArtifact];
             if(System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')){
                 commandLine("cmd", "/c", *command);
             }else{
