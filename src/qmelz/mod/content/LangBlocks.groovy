@@ -9,6 +9,9 @@ class LangBlocks implements ContentList{
     def java, groovy, scala, kotlin;
     
     void load(){
-        Log.info "it loaded"
+        java = new Java("java");
+        groovy = new Groovy("groovy");
+        scala = new Scala("scala");
+        kotlin = new Kotlin("kotlin");
     }
 }

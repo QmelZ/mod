@@ -1,8 +1,8 @@
 plugins{
     id "java"
-    id "groovy"
     id "scala"
     id "org.jetbrains.kotlin.jvm" version "1.5.0"
+    id "groovy"
 }
 
 sourceCompatibility = 1.8;
@@ -26,7 +26,8 @@ repositories{
 }
 
 dependencies{
-    compile("org.codehaus.groovy:groovy-all:2.4.15");
+    api("org.codehaus.groovy:groovy-all:2.4.15");
+    api("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.0");
     implementation("org.scala-lang:scala-library:2.11.12");
     implementation("com.github.Anuken.Mindustry:core:v126.2");
 }
@@ -34,32 +35,46 @@ dependencies{
 jar{
     archiveFileName.set("chaos.jar");
     
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE;
+    
+    
     from{
-        configurations.compile.collect{
+        configurations.compileClasspath.collect{
             it.isDirectory() ? it : zipTree(it)
         }
     }
 }
 
-// credits to sonnicon
-task dexify(type: Jar) {
-    archiveName "dexed-chaos.jar"
+compileGroovy{
+    dependsOn "compileScala";
+    classpath += files(compileScala.destinationDir);
+    
+    dependsOn "compileKotlin";
+    classpath += files(compileKotlin.destinationDir);
+}
 
-    final File jarArtifact = new File(tasks.jar.archiveFile.get().asFile.parent, "chaos.jar"),
-               dexedArtifact = new File(tasks.dexify.getTemporaryDir(), "dexed.jar")
-    doFirst {
-        exec {
+// credits to sonnicon
+task dexify(type: Jar){
+    archiveFileName.set("dexed-chaos.jar");
+
+    final File jarArtifact = new File(tasks.jar.archiveFile.get().asFile.parent, "chaos.jar")
+    final File dexedArtifact = new File(tasks.dexify.getTemporaryDir(), "dexed.jar")
+    
+    doFirst{
+        exec{
             workingDir dexedArtifact.parent
-            def command = ["d8", "--min-api", pMinApi, "--output", dexedArtifact, jarArtifact]
-            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows'))
-                commandLine("cmd", "/c", *command)
-            else
-                commandLine(*command)
+            
+            def command = ["d8", "--min-api", pMinApi, "--output", dexedArtifact, jarArtifact];
+            if(System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')){
+                commandLine("cmd", "/c", *command);
+            }else{
+                commandLine(*command);
+            }
 
         }
     }
 
-    from(zipTree(jarArtifact), zipTree(dexedArtifact))
+    from(zipTree(jarArtifact), zipTree(dexedArtifact));
 }
 
 task buildDex dependsOn "build", "dexify"
