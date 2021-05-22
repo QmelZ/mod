@@ -25,8 +25,15 @@ repositories{
 }
 
 dependencies{
-    implementation("org.codehaus.groovy:groovy-all:2.4.15");
-    implementation("com.github.Anuken.Mindustry:core:v126.2");
+    def impl = [
+        "org.codehaus.groovy:groovy-all:2.4.15",
+        "org.scala-lang:scala-library:2.11.12",
+        "com.github.Anuken.Mindustry:core:v126.2"
+    ];
+    
+    impl.each{
+        implementation(it);
+    }
 }
 
 
