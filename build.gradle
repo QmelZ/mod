@@ -11,20 +11,44 @@ jar.archiveFileName.set("chaos.jar");
 
 sourceSets.main{
     resources.srcDir("resources/");
-    def langs = [java, groovy, scala, kotlin];
-    langs.each{
+    
+    [java, groovy, scala, kotlin].each{
         it.srcDir("src/");
     }
 }
 
 repositories{
-    mavenCentral()
+    mavenCentral();
     maven{
         url("https://jitpack.io");
     }
 }
 
 dependencies{
-    implementation("com.github.Anuken.Mindustry:core:v126.2");
     implementation("org.codehaus.groovy:groovy-all:2.4.15");
+    implementation("com.github.Anuken.Mindustry:core:v126.2");
 }
+
+
+// credits to sonnicon
+task dexify(type: Jar) {
+    archiveName "dexed-chaos.jar"
+
+    final File jarArtifact = new File(tasks.jar.archiveFile.get().asFile.parent, "chaos.jar"),
+               dexedArtifact = new File(tasks.dexify.getTemporaryDir(), "dexed.jar")
+    doFirst {
+        exec {
+            workingDir dexedArtifact.parent
+            def command = ["d8", "--min-api", pMinApi, "--output", dexedArtifact, jarArtifact]
+            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows'))
+                commandLine("cmd", "/c", *command)
+            else
+                commandLine(*command)
+
+        }
+    }
+
+    from(zipTree(jarArtifact), zipTree(dexedArtifact))
+}
+
+task buildDex dependsOn "build", "dexify"
